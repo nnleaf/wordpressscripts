@@ -7,53 +7,69 @@
 #//     ////  //     ////
 #
 # 20200426 - First script for updating Wordpress VM
-echo "------------------------------------------------------------------------"
-echo "Updating Debian..."
-echo "------------------------------------------------------------------------"
-sudo apt-get update
-echo "------------------------------------------------------------------------"
-echo "Upgrading Debian..."
-echo "------------------------------------------------------------------------"
-sudo apt-get upgrade
-echo "------------------------------------------------------------------------"
-echo "Running autoclean..."
-echo "------------------------------------------------------------------------"
-sudo apt-get autoclean
-echo "------------------------------------------------------------------------"
-echo "Updating mlocate..."
-echo "------------------------------------------------------------------------"
-sudo updatedb
-echo "------------------------------------------------------------------------"
-echo "Remember to check logs!"
-echo "------------------------------------------------------------------------"
-read -p "Check logs? (y/n)"
-echo
+# 20200515 - Refreshed look, added Debian Versioning
+#
+echo "------------------------------------------"
+echo "--[ Debian Version $(cat /etc/debian_version), Update? (y/n) ]--"
+echo "------------------------------------------"
+read -p ""
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
-  echo "------------------------------------------------------------------------"
-  echo "Checking Unattended Updates log..."
-  echo "------------------------------------------------------------------------"
-  sudo tail -n 5 /var/log/dpkg.log
-  echo "------------------------------------------------------------------------"
-  echo "Checking if fail2ban is running..."
-  echo "------------------------------------------------------------------------"
+  echo "-----------------------"
+  echo "--[ Updating Debian ]--"
+  echo "-----------------------"
+  sudo apt-get update
+  echo "------------------------"
+  echo "--[ Upgrading Debian ]--"
+  echo "------------------------"
+  sudo apt-get upgrade
+  echo "-------------------------"
+  echo "--[ Running autoclean ]--"
+  echo "-------------------------"
+  sudo apt-get autoclean
+fi
+echo "------------------------"
+echo "--[ Updating mlocate ]--"
+echo "------------------------"
+sudo updatedb
+echo "-------------------------"
+echo "--[ Check Logs? (y/n) ]--"
+echo "-------------------------"
+read -p ""
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+  echo "---------------------------------------"
+  echo "--[ Checking Unattended Updates log ]--"
+  echo "---------------------------------------"
+  sudo tail -n 5 /var/log/unattended-upgrades/unattended-upgrades.log
+  echo "---------------------------------------"
+  echo "--[ Checking if fail2ban is running ]--"
+  echo "---------------------------------------"
   sudo fail2ban-client status
-  echo "------------------------------------------------------------------------"
-  echo "Checking ufw status..."
-  echo "------------------------------------------------------------------------"
+  echo "---------------------------"
+  echo "--[ Checking UFW status ]--"
+  echo "---------------------------"
   sudo ufw status
-  echo "------------------------------------------------------------------------"
-  echo "Testing disk access speed..."
-  echo "------------------------------------------------------------------------"
-  sudo hdparm -tT /dev/sda1
-  echo "------------------------------------------------------------------------"
-  read -p "Run rkhunter scan? (y/n)"
-  echo
+  echo "--------------------------------------"
+  echo "--[ Check Disk Access Speed? (y/n) ]--"
+  echo "--------------------------------------"
+  read -p ""
   if [[ $REPLY =~ ^[Yy]$ ]]
-    then
-    echo "------------------------------------------------------------------------"
-    echo "Running rkhunter scan..."
-    echo "------------------------------------------------------------------------"
-    sudo rkhunter --check --rwo
+  then
+    echo "---------------------------------"
+    echo "--[ Testing disk access speed ]--"
+    echo "---------------------------------"
+    sudo hdparm -tT /dev/sda1
+  fi
+  echo "--------------------------------"
+  echo "--[ Run rkhunter scan? (y/n) ]--"
+  echo "--------------------------------"
+  read -p ""
+  if [[ $REPLY =~ ^[Yy]$ ]]
+  then
+  echo "-----------------------------"
+  echo "--[ Running rkhunter scan ]--"
+  echo "-----------------------------"
+  sudo rkhunter --check --rwo
   fi
 fi
